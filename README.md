@@ -1,18 +1,18 @@
-# GHFLIX (GitHub Website Browser)
+# MemFlix — Animated Memory & Journal Vault
 
-A Netflix-like interface for browsing and opening websites from your GitHub projects.
+MemFlix is a Netflix-style, animated web app for storing your memories, journals, milestones, and ideas with real timestamps.
 
-## Features
+## What changed
 
-- Enter a GitHub username and load repository data from the GitHub API.
-- Auto-detect website links from:
-  - GitHub Pages (`has_pages` repos), and
-  - Custom `homepage` URLs.
-- Browse sites in horizontally scrollable rows.
-- Click any card (or press Enter/Space on it) to open the site.
-- Includes a featured section with one-click launch.
+- Cinematic, animated UI inspired by Netflix cards + a Notion-like writing flow.
+- Live clock showing your current local time.
+- Rich composer for entries: title, type, timestamp, tags, optional image URL, and body.
+- Horizontal "Latest Drops" shelf and a chronological timeline view.
+- Search + type filters.
+- JSON import/export with an easy schema for SwiftUI Codable compatibility.
+- Local persistence using browser localStorage.
 
-## Run
+## Run locally
 
 ```bash
 python3 -m http.server 8000
@@ -20,8 +20,29 @@ python3 -m http.server 8000
 
 Open `http://localhost:8000`.
 
-You can also preload a username:
+## JSON format (SwiftUI-friendly)
 
-```text
-http://localhost:8000/?user=your-github-username
+You can import either:
+- a plain array of entries, or
+- an object with an `entries` array.
+
+Example:
+
+```json
+{
+  "app": "MemFlix",
+  "exportedAt": "2026-04-16T00:00:00.000Z",
+  "entries": [
+    {
+      "id": "entry-1",
+      "title": "First launch",
+      "body": "Shipped my app and celebrated.",
+      "type": "Milestone",
+      "mediaUrl": "https://example.com/image.jpg",
+      "tags": ["launch", "ios"],
+      "createdAt": "2026-04-16T10:30:00.000Z",
+      "updatedAt": "2026-04-16T10:30:00.000Z"
+    }
+  ]
+}
 ```

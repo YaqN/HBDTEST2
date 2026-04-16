@@ -3,56 +3,104 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>My GitHub Pages Theater</title>
+  <title>MemFlix Journal Studio</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
-  <div class="backdrop"></div>
-  <main class="app">
-    <header class="topbar">
-      <div class="brand">GHFLIX</div>
-      <div class="controls" aria-label="Username controls">
-        <input id="username" type="text" placeholder="GitHub username" autocomplete="off" />
-        <button id="loadBtn" type="button">Load Library</button>
+  <div class="cinema-backdrop"></div>
+  <div class="noise-overlay"></div>
+
+  <main class="app-shell">
+    <header class="topbar glass">
+      <div class="brand-wrap">
+        <span class="brand-logo">MF</span>
+        <div>
+          <h1 class="brand">MEMFLIX</h1>
+          <p class="brand-sub">Netflix x Notion vibe for your memories</p>
+        </div>
+      </div>
+      <div class="clock-wrap">
+        <span class="clock-label">Current Time</span>
+        <strong id="liveClock" class="clock-value">--:--:--</strong>
       </div>
     </header>
 
-    <section class="hero" id="hero" aria-live="polite">
-      <h1 id="heroTitle">Your GitHub Websites, Netflix Style</h1>
-      <p id="heroText">Enter your username to build a clickable catalog of your published projects.</p>
+    <section class="hero glass pulse">
+      <div>
+        <h2>Cinematic Memory Vault</h2>
+        <p>Capture journals, milestones, and moments with timestamps — then browse them like a streaming library.</p>
+      </div>
       <div class="hero-actions">
-        <button id="openFeatured" type="button" class="secondary" disabled>Open Featured Site</button>
+        <button id="focusComposerBtn" type="button">+ New Entry</button>
+        <button id="openLatestBtn" type="button" class="secondary" disabled>Open Latest</button>
       </div>
     </section>
 
     <section id="status" class="status" aria-live="polite"></section>
 
-    <section class="row-block">
-      <h2>Featured Websites</h2>
-      <div id="featuredRow" class="row"></div>
+    <section id="composer" class="composer glass" aria-label="Memory composer">
+      <h3>Add Memory / Journal Entry</h3>
+      <div class="composer-grid">
+        <input id="entryTitle" type="text" placeholder="Title (e.g., First app launch)" />
+        <select id="entryType">
+          <option value="Memory">Memory</option>
+          <option value="Journal">Journal</option>
+          <option value="Milestone">Milestone</option>
+          <option value="Idea">Idea</option>
+        </select>
+        <input id="entryDateTime" type="datetime-local" />
+        <input id="entryTags" type="text" placeholder="Tags (comma separated)" />
+        <input id="entryMediaUrl" type="url" placeholder="Optional image URL" />
+      </div>
+      <textarea id="entryBody" rows="5" placeholder="Write your memory or journal note..."></textarea>
+      <div class="composer-actions">
+        <button id="saveEntryBtn" type="button">Save Entry</button>
+        <label class="file-label" for="importFile">Import JSON</label>
+        <input id="importFile" type="file" accept="application/json" />
+        <button id="exportBtn" type="button" class="secondary">Export JSON (SwiftUI-friendly)</button>
+        <button id="clearBtn" type="button" class="danger">Clear All</button>
+      </div>
+      <small class="hint">Schema keeps ISO timestamps and plain fields so you can easily map to SwiftUI Codable models.</small>
+    </section>
+
+    <section class="filters glass">
+      <input id="searchInput" type="search" placeholder="Search title, body, tags..." />
+      <select id="filterType">
+        <option value="All">All types</option>
+        <option value="Memory">Memory</option>
+        <option value="Journal">Journal</option>
+        <option value="Milestone">Milestone</option>
+        <option value="Idea">Idea</option>
+      </select>
     </section>
 
     <section class="row-block">
-      <h2>GitHub Pages</h2>
-      <div id="pagesRow" class="row"></div>
+      <h3>Latest Drops</h3>
+      <div id="latestRow" class="row"></div>
     </section>
 
     <section class="row-block">
-      <h2>Custom Homepages</h2>
-      <div id="homepagesRow" class="row"></div>
+      <h3>Timeline</h3>
+      <div id="timeline" class="timeline"></div>
     </section>
   </main>
 
-  <template id="siteCardTemplate">
-    <article class="site-card" tabindex="0" role="button">
-      <div class="site-card__thumb"></div>
-      <div class="site-card__meta">
-        <h3 class="site-card__title"></h3>
-        <p class="site-card__desc"></p>
-        <span class="site-card__type"></span>
+  <template id="entryCardTemplate">
+    <article class="entry-card" tabindex="0" role="button">
+      <div class="entry-media">🎬</div>
+      <div class="entry-content">
+        <div class="entry-top">
+          <h4 class="entry-title"></h4>
+          <span class="entry-type"></span>
+        </div>
+        <p class="entry-body"></p>
+        <div class="entry-meta">
+          <span class="entry-time"></span>
+          <span class="entry-tags"></span>
+        </div>
       </div>
     </article>
   </template>
