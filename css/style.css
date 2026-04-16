@@ -52,16 +52,25 @@ body {
   flex-wrap: wrap;
 }
 
-input {
+input,
+select {
   background: #101018;
   border: 1px solid #2a2a38;
   color: var(--text);
   border-radius: 8px;
   padding: 0.65rem 0.8rem;
+}
+
+input {
   min-width: 220px;
 }
 
-button {
+select {
+  min-width: 180px;
+}
+
+button,
+.file-label {
   border: 0;
   border-radius: 8px;
   padding: 0.65rem 0.9rem;
@@ -69,10 +78,17 @@ button {
   cursor: pointer;
   background: var(--accent);
   color: #fff;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
 }
 
 button.secondary {
   background: #262638;
+}
+
+button.danger {
+  background: #8f1d2f;
 }
 
 button:disabled {
@@ -80,7 +96,8 @@ button:disabled {
   cursor: not-allowed;
 }
 
-.hero {
+.hero,
+.upload-panel {
   margin: 1rem 0 0.5rem;
   padding: 1.2rem;
   border-radius: 12px;
@@ -88,14 +105,33 @@ button:disabled {
   border: 1px solid #2c2c3d;
 }
 
-.hero h1 {
+.hero h1,
+.upload-panel h2 {
   margin: 0 0 0.5rem;
   font-size: clamp(1.2rem, 3vw, 2rem);
 }
 
-.hero p {
+.hero p,
+.upload-panel p {
   color: var(--muted);
   margin: 0 0 0.8rem;
+}
+
+.upload-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 0.6rem;
+}
+
+.upload-actions {
+  margin-top: 0.8rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+#uploadFile {
+  display: none;
 }
 
 .status {

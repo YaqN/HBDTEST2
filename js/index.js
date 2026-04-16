@@ -2,17 +2,30 @@ const usernameInput = document.getElementById('username');
 const loadBtn = document.getElementById('loadBtn');
 const openFeaturedBtn = document.getElementById('openFeatured');
 
+const uploadTitleInput = document.getElementById('uploadTitle');
+const uploadUrlInput = document.getElementById('uploadUrl');
+const uploadTypeInput = document.getElementById('uploadType');
+const uploadDescInput = document.getElementById('uploadDesc');
+const addUploadBtn = document.getElementById('addUploadBtn');
+const uploadFileInput = document.getElementById('uploadFile');
+const exportUploadsBtn = document.getElementById('exportUploadsBtn');
+const clearUploadsBtn = document.getElementById('clearUploadsBtn');
+
 const statusEl = document.getElementById('status');
 const heroTitle = document.getElementById('heroTitle');
 const heroText = document.getElementById('heroText');
 
+const uploadedRow = document.getElementById('uploadedRow');
 const featuredRow = document.getElementById('featuredRow');
 const pagesRow = document.getElementById('pagesRow');
 const homepagesRow = document.getElementById('homepagesRow');
 
 const siteCardTemplate = document.getElementById('siteCardTemplate');
 
+const UPLOAD_STORAGE_KEY = 'ghflix_uploaded_sites';
+
 let featuredUrl = '';
+let uploadedSites = loadUploadedSites();
 
 function setStatus(message, tone = '') {
   statusEl.textContent = message;
@@ -33,7 +46,9 @@ function openWebsite(url) {
 }
 
 function cardEmoji(kind) {
-  return kind === 'GitHub Pages' ? '📺' : '🌐';
+  if (kind === 'GitHub Pages') return '📺';
+  if (kind === 'Uploaded') return '📁';
+  return '🌐';
 }
 
 function createSiteCard(site) {
@@ -119,6 +134,113 @@ function updateHero(username, websites) {
   heroText.textContent = `${featured.type} • Click “Open Featured Site” or select any card below.`;
 }
 
+function loadUploadedSites() {
+  const raw = localStorage.getItem(UPLOAD_STORAGE_KEY);
+  if (!raw) return [];
+
+  try {
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
+
+function saveUploadedSites() {
+  localStorage.setItem(UPLOAD_STORAGE_KEY, JSON.stringify(uploadedSites));
+}
+
+function renderUploadedSites() {
+  renderRow(uploadedRow, uploadedSites);
+}
+
+function readUploadForm() {
+  const repo = uploadTitleInput.value.trim();
+  const url = normalizeUrl(uploadUrlInput.value.trim());
+  const description = uploadDescInput.value.trim();
+  const type = uploadTypeInput.value;
+
+  if (!repo || !url) {
+    setStatus('Please provide at least a project title and URL for uploaded entries.', 'warn');
+    return null;
+  }
+
+  return {
+    repo,
+    url,
+    description,
+    type
+  };
+}
+
+function resetUploadForm() {
+  uploadTitleInput.value = '';
+  uploadUrlInput.value = '';
+  uploadDescInput.value = '';
+  uploadTypeInput.value = 'Uploaded';
+}
+
+function addUploadedSite() {
+  const site = readUploadForm();
+  if (!site) return;
+
+  uploadedSites.unshift(site);
+  saveUploadedSites();
+  renderUploadedSites();
+  resetUploadForm();
+  setStatus('Uploaded site saved to your local GHFLIX library.', 'ok');
+}
+
+function importUploadedSites(file) {
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = () => {
+    try {
+      const parsed = JSON.parse(String(reader.result));
+      if (!Array.isArray(parsed)) throw new Error('JSON must be an array of site entries.');
+
+      const normalized = parsed
+        .map((entry) => ({
+          repo: String(entry.repo || entry.title || '').trim(),
+          url: normalizeUrl(String(entry.url || '').trim()),
+          description: String(entry.description || '').trim(),
+          type: String(entry.type || 'Uploaded').trim() || 'Uploaded'
+        }))
+        .filter((entry) => entry.repo && entry.url);
+
+      uploadedSites = [...normalized, ...uploadedSites];
+      saveUploadedSites();
+      renderUploadedSites();
+      setStatus(`Imported ${normalized.length} uploaded site entr${normalized.length === 1 ? 'y' : 'ies'}.`, normalized.length ? 'ok' : 'warn');
+    } catch (error) {
+      setStatus(`Import failed: ${error.message}`, 'error');
+    }
+  };
+
+  reader.readAsText(file);
+}
+
+function exportUploadedSites() {
+  const payload = JSON.stringify(uploadedSites, null, 2);
+  const blob = new Blob([payload], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const anchor = document.createElement('a');
+  anchor.href = url;
+  anchor.download = 'ghflix-uploads.json';
+  anchor.click();
+  URL.revokeObjectURL(url);
+
+  setStatus('Exported uploaded sites to ghflix-uploads.json.', 'ok');
+}
+
+function clearUploadedSites() {
+  uploadedSites = [];
+  saveUploadedSites();
+  renderUploadedSites();
+  setStatus('Cleared uploaded sites from this browser.', 'warn');
+}
+
 async function loadLibrary() {
   const username = usernameInput.value.trim();
   if (!username) {
@@ -155,6 +277,14 @@ async function loadLibrary() {
 }
 
 loadBtn.addEventListener('click', loadLibrary);
+addUploadBtn.addEventListener('click', addUploadedSite);
+exportUploadsBtn.addEventListener('click', exportUploadedSites);
+clearUploadsBtn.addEventListener('click', clearUploadedSites);
+uploadFileInput.addEventListener('change', (event) => {
+  importUploadedSites(event.target.files?.[0]);
+  event.target.value = '';
+});
+
 usernameInput.addEventListener('keydown', (event) => {
   if (event.key === 'Enter') loadLibrary();
 });
@@ -169,3 +299,5 @@ if (presetUser) {
   usernameInput.value = presetUser;
   loadLibrary();
 }
+
+renderUploadedSites();

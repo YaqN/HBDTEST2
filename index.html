@@ -30,6 +30,33 @@
 
     <section id="status" class="status" aria-live="polite"></section>
 
+    <section class="upload-panel">
+      <h2>Upload Past GitHub Pages Into This App</h2>
+      <p>Add links manually or import a JSON file so all your older projects live in one place.</p>
+      <div class="upload-grid">
+        <input id="uploadTitle" type="text" placeholder="Project title" />
+        <input id="uploadUrl" type="url" placeholder="https://your-site.github.io/project/" />
+        <select id="uploadType">
+          <option value="Uploaded">Uploaded</option>
+          <option value="GitHub Pages">GitHub Pages</option>
+          <option value="Custom Homepage">Custom Homepage</option>
+        </select>
+        <input id="uploadDesc" type="text" placeholder="Short description" />
+      </div>
+      <div class="upload-actions">
+        <button id="addUploadBtn" type="button">Add to Library</button>
+        <label class="file-label" for="uploadFile">Import JSON</label>
+        <input id="uploadFile" type="file" accept="application/json" />
+        <button id="exportUploadsBtn" type="button" class="secondary">Export Uploads</button>
+        <button id="clearUploadsBtn" type="button" class="danger">Clear Uploads</button>
+      </div>
+    </section>
+
+    <section class="row-block">
+      <h2>Uploaded Library</h2>
+      <div id="uploadedRow" class="row"></div>
+    </section>
+
     <section class="row-block">
       <h2>Featured Websites</h2>
       <div id="featuredRow" class="row"></div>
